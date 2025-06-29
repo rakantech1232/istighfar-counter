@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عداد الاستغفار</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .arabic-text {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .counter-display {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        .mode-section {
+            margin-bottom: 25px;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border: 2px solid #ffd700;
+            transform: scale(1.05);
+        }
+
+        .auto-controls {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .auto-controls.active {
+            display: block;
+        }
+
+        .interval-control {
+            margin: 15px 0;
+        }
+
+        .interval-control label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .interval-display {
+            font-weight: bold;
+            color: #ffd700;
+            min-width: 60px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .start-btn, .manual-btn, .reset-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .stop-btn {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .status {
+            margin: 15px 0;
+            font-size: 1.1em;
+            height: 25px;
+        }
+
+        .status.running {
+            color: #4CAF50;
+        }
+
+        .status.stopped {
+            color: #f44336;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .counter-display {
+                font-size: 3em;
+            }
+            
+            .mode-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>عداد الاستغفار</h1>
+        <div class="arabic-text">أستغفر الله العظيم</div>
+        
+        <div class="counter-display" id="counter">0</div>
+        
+        <div class="controls">
+            <div class="mode-section">
+                <div class="mode-buttons">
+                    <button class="mode-btn active" onclick="setMode('auto')" id="autoBtn">تلقائي</button>
+                    <button class="mode-btn" onclick="setMode('manual')" id="manualBtn">يدوي</button>
+                </div>
+                
+                <div class="auto-controls active" id="autoControls">
+                    <div class="interval-control">
+                        <label>سرعة الاستغفار:</label>
+                        <div class="slider-container">
+                            <span>بطيء</span>
+                            <input type="range" min="500" max="5000" value="2000" class="slider" id="intervalSlider">
+                            <span>سريع</span>
+                        </div>
+                        <div class="interval-display" id="intervalDisplay">2.0 ثانية</div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="start-btn" onclick="startAuto()" id="startBtn">ابدأ</button>
+                        <button class="stop-btn" onclick="stopAuto()" id="stopBtn" style="display: none;">توقف</button>
+                    </div>
+                </div>
+                
+                <div class="auto-controls" id="manualControls">
+                    <div class="action-buttons">
+                        <button class="manual-btn" onclick="incrementManual()">استغفر الله</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="reset-btn" onclick="resetCounter()">إعادة تعيين</button>
+            
+            <div class="status" id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        let count = 0;
+        let autoInterval = null;
+        let currentMode = 'auto';
+        let intervalTime = 2000;
+
+        // عناصر DOM
+        const counterDisplay = document.getElementById('counter');
+        const intervalSlider = document.getElementById('intervalSlider');
+        const intervalDisplay = document.getElementById('intervalDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const status = document.getElementById('status');
+        const autoControls = document.getElementById('autoControls');
+        const manualControls = document.getElementById('manualControls');
+        const autoBtn = document.getElementById('autoBtn');
+        const manualBtn = document.getElementById('manualBtn');
+
+        // تحديث عرض الوقت
+        function updateIntervalDisplay() {
+            intervalTime = parseInt(intervalSlider.value);
+            intervalDisplay.textContent = (intervalTime / 1000).toFixed(1) + ' ثانية';
+        }
+
+        // تغيير الوضع
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // إيقاف العد التلقائي إذا كان يعمل
+            if (autoInterval) {
+                stopAuto();
+            }
+            
+            // تحديث أزرار الوضع
+            if (mode === 'auto') {
+                autoBtn.classList.add('active');
+                manualBtn.classList.remove('active');
+                autoControls.classList.add('active');
+                manualControls.classList.remove('active');
+            } else {
+                manualBtn.classList.add('active');
+                autoBtn.classList.remove('active');
+                manualControls.classList.add('active');
+                autoControls.classList.remove('active');
+            }
+            
+            status.textContent = '';
+            status.className = 'status';
+        }
+
+        // بدء العد التلقائي
+        function startAuto() {
+            if (currentMode !== 'auto' || autoInterval) return;
+            
+            autoInterval = setInterval(() => {
+                count++;
+                updateCounterDisplay();
+            }, intervalTime);
+            
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            status.textContent = 'العد التلقائي يعمل...';
+            status.className = 'status running';
+        }
+
+        // إيقاف العد التلقائي
+        function stopAuto() {
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+            }
+            
+            startBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            status.textContent = 'العد التلقائي متوقف';
+            status.className = 'status stopped';
+        }
+
+        // العد اليدوي
+        function incrementManual() {
+            if (currentMode !== 'manual') return;
+            
+            count++;
+            updateCounterDisplay();
+            
+            // تأثير بصري
+            counterDisplay.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                counterDisplay.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        // إعادة تعيين العداد
+        function resetCounter() {
+            if (autoInterval) {
+                stopAuto();
+            }
+            
+            count = 0;
+            updateCounterDisplay();
+            status.textContent = 'تم إعادة تعيين العداد';
+            status.className = 'status';
+            
+            setTimeout(() => {
+                status.textContent = '';
+            }, 2000);
+        }
+
+        // تحديث عرض العداد
+        function updateCounterDisplay() {
+            counterDisplay.textContent = count.toLocaleString('ar-SA');
+        }
+
+        // تحديث الوقت عند تحريك المنزلق
+        intervalSlider.addEventListener('input', updateIntervalDisplay);
+
+        // تحديد الوقت عند تغيير المنزلق
+        intervalSlider.addEventListener('change', () => {
+            if (autoInterval) {
+                stopAuto();
+                startAuto();
+            }
+        });
+
+        // منع النوم على الأجهزة المحمولة
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log('Wake lock not supported');
+            }
+        }
+
+        // طلب منع النوم عند بدء العد التلقائي
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
+        // تهيئة الصفحة
+        updateIntervalDisplay();
+        
+        // حفظ واستعادة العداد من التخزين المحلي
+        window.addEventListener('load', () => {
+            const savedCount = localStorage.getItem('istighfarCount');
+            if (savedCount) {
+                count = parseInt(savedCount);
+                updateCounterDisplay();
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('istighfarCount', count.toString());
+        });
+
+        // حفظ تلقائي كل 10 ثوانٍ
+        setInterval(() => {
+            localStorage.setItem('istighfarCount', count.toString());
+        }, 10000);
+
+        // إضافة دعم للوحة المفاتيح
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && currentMode === 'manual') {
+                e.preventDefault();
+                incrementManual();
+            }
+        });
+    </script>
+</body>
+</html>
